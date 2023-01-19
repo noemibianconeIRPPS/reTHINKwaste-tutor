@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-steps/1.1.0/demo/css/jquery.steps.css}"/>
+    <script type="text/javascript" th:src="@{/webjars/jquery-steps/1.1.0/build/jquery.steps.js}"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+
+    <title th:text="#{pm.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container-fluid">
+        <form action="/saveAnswers" method="post">
+            <div class="row mx-2 mt-5">
+                <p class="fs-3 my-blue fw-bold mb-4 text-center" th:text="#{pm.extendedPMModuleUppercase}"></p>
+            </div>
+            <div class="row mx-2 mb-5">
+                <div class="borderRadiusBlueBorderWhiteBackground col-4 text-center py-4">
+                    <p class="my-blue fw-bold fs-4" th:text="#{pm.moduleInfoUppercase}"></p>
+                    <p class="fs-6 text-justify" th:text="#{pm.introText}">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at nisl arcu. Suspendisse facilisis purus vel sem condimentum, at aliquet massa luctus. Nulla bibendum semper nunc, eget dapibus nibh ullamcorper id. Nullam commodo metus at velit consectetur pulvinar. Donec vehicula auctor felis et placerat. Phasellus ante lorem, commodo vel vehicula ut, vulputate lacinia erat. In laoreet eros eget nisl lobortis vulputate. Aliquam id gravida purus. Etiam dictum lectus sit amet nisl scelerisque laoreet. Pellentesque at lorem augue. Cras quis dignissim velit. Nullam feugiat consectetur quam ut facilisis. Donec pretium ligula massa, eu convallis augue hendrerit id.</p>
+                    <div id="light3">
+                        <a class="boxclose" id="boxclose3" onclick="lightbox_close('mod3Video', '3');"></a>
+                        <video id="mod3Video" width="600" controls class="d-none">
+                            <source th:src="@{/video/mod3 - PM.mp4}" type="video/mp4">
+                        </video>
+                    </div>
+                    <div id="fade3" onClick="lightbox_close('mod3Video', '3');"></div>
+                    <a onclick="lightbox_open('mod3Video', '3');">
+                        <img class="video-preview borderRadius w-80" th:src="@{/img/video_previews/mod3.jpg}"/>
+                    </a>
+                </div>
+                <div class="col-8">
+                    <th:block th:each="category, iter : ${pmModule.getCategoryList()}">
+                        <th:block th:if="${category.getId() == 11}">
+                            <div class="wizardContent active" th:id="${category.getId()}">
+                                <!-- FORM GROUP PER CATEGORIE SENZA DOMANDE FACOLTATIVE -->
+                                <div class="row align-items-start">
+                                    <th:block th:each="question : ${category.getQuestions()}">
+                                        <div class="col-6">
+                                            <div class="form-group mb-3">
+                                                <label class="green-label w-100 py-2 px-4">
+                                                    <div class="d-flex justify-content-center text-center">
+                                                        <p class="fs-4 flex-grow-1 ps-4" th:text="${category.getTranslations().get(language)}"/>
+                                                        <a class="fs-4 white-anchor" target="_blank" th:href="${question.getLearningMaterials().get(0).getLink()}"><i class="fas fa-question-circle"></i></a>
+                                                    </div>
+                                                    <div class="d-flex justify-content-center">
+                                                        <p class="fst-italic m-0" th:text="${iter.index+1} + '/14'"></p>
+                                                    </div>
+                                                    <p class="fs-6 text-justify" th:text="${question.getTranslations().get(language).getText()}" th:with="language=${language}"/>
+                                                </label>
+                                                <div class="white-background p-3 mb-3">
+                                                    <th:block th:each="answer : ${question.getAnswerList()}">
+                                                        <label class="d-flex align-items-center ps-3">
+                                                            <span class="pe-2" th:id="'span_'+${question.getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+                                                            <input type="radio" th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(question) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(question).equals(answer)} ? ${moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(question)}" th:name="'question_'+${question.getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                        </label>
+                                                    </th:block>
+                                                </div>
+                                            </div>
+                                            <ul>
+                                                <a class="wizardNext" th:id="'wizardNext_'+${category.getId()}"><i class="fas fa-arrow-right"></i></a>
+                                                <a class="wizardPrevious" th:id="'wizardPrevious_'+${category.getId()}"><i class="fas fa-arrow-left"></i></a>
+                                            </ul>
+                                        </div>
+                                        <div class="borderRadiusBlueBorderWhiteBackground col-6 text-center py-4">
+                                            <p class="my-blue fw-bold fs-4" th:text="#{pm.guidelineUppercase}"></p>
+                                            <p class="fs-6 text-justify" th:text="${question.getTranslations().get(language).getGuideline()}" th:with="language=${language}"></p>
+                                        </div>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${category.getId() != 11}">
+                            <div class="wizardContent" th:id="${category.getId()}">
+                                <!-- FORM GROUP PER CATEGORIE SENZA DOMANDE FACOLTATIVE -->
+                                <div class="row align-items-start">
+                                    <th:block th:each="question : ${category.getQuestions()}">
+                                        <div class="col-6">
+                                            <div class="form-group mb-3">
+                                                <label class="green-label w-100 py-2 px-4">
+                                                    <div class="d-flex justify-content-center text-center">
+                                                        <p class="fs-4 flex-grow-1 ps-4" th:text="${category.getTranslations().get(language)}" th:with="language=${language}"/>
+                                                        <a class="fs-4 white-anchor" target="_blank" th:href="${question.getLearningMaterials().get(0).getLink()}"><i class="fas fa-question-circle"></i></a>
+                                                    </div>
+                                                    <div class="d-flex justify-content-center">
+                                                        <p class="fst-italic m-0" th:text="${iter.index+1} + '/14'"></p>
+                                                    </div>
+                                                    <p class="fs-6 text-justify" th:text="${question.getTranslations().get(language).getText()}" th:with="language=${language}"/>
+                                                </label>
+                                                <div class="white-background p-3 mb-3">
+                                                    <th:block th:each="answer : ${question.getAnswerList()}">
+                                                        <label class="d-flex align-items-center ps-3">
+                                                            <span class="pe-2" th:id="'span_'+${question.getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+                                                            <input type="radio" th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(question) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(question).equals(answer)} ? ${moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(question)}" th:name="'question_'+${question.getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                        </label>
+                                                    </th:block>
+                                                </div>
+                                            </div>
+                                            <ul>
+                                                <a class="wizardNext" th:id="'wizardNext_'+${category.getId()}"><i class="fas fa-arrow-right"></i></a>
+                                                <a class="wizardPrevious" th:id="'wizardPrevious_'+${category.getId()}"><i class="fas fa-arrow-left"></i></a>
+                                            </ul>
+                                        </div>
+                                        <div class="borderRadiusBlueBorderWhiteBackground col-6 text-center py-4">
+                                            <p class="my-blue fw-bold fs-4" th:text="#{pm.guidelineUppercase}"></p>
+                                            <p class="fs-6 text-justify" th:text="${question.getTranslations().get(language).getGuideline()}" th:with="language=${language}"></p>
+                                        </div>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </th:block>
+                    </th:block>
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+</main>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+<script type="text/javascript" th:src="@{/js/pm.js}"></script>
+</body>
+</html>

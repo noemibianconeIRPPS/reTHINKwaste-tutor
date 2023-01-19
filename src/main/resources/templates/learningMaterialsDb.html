@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+
+    <title th:text="#{profile.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container d-flex flex-column align-self-center">
+        <div class="borderRadiusBlueBorder p-3">
+            <h5 class="my-green text-center" th:text="#{learningMaterialsDb.title}"></h5><br/>
+            <table align="center" id="learningMaterialTable" class="cell-border d-none">
+                <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Modules</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Language</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="learningMaterial : ${suggestedLearningMaterials}">
+                    <td><a target="_blank" th:text="${learningMaterial.getTitle()}" th:href="${learningMaterial.getLink()}"></a></td>
+                    <td><p th:each="module : ${learningMaterial.getModules()}" th:text="${module.getAcronym()}"></p></td>
+                    <td><p th:each="type : ${learningMaterial.getLearningMaterialTypes()}" th:text="${type.getType()}"></p></td>
+                    <td class="td-w-5 text-center">
+                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('EN')}">
+                            <img style="width:50%;" th:src="@{/img/flags/united-kingdom.png}"/><span style="display:none;">en</span>
+                        </th:block>
+                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('IT')}">
+                            <img style="width:50%;" th:src="@{/img/flags/italy.png}"/><span style="display:none;">it</span>
+                        </th:block>
+                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('ES')}">
+                            <img style="width:50%;" th:src="@{/img/flags/spain.png}"/><span style="display:none;">es</span>
+                        </th:block>
+                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('CA')}">
+                            <img style="width:50%;" th:src="@{/img/flags/catalonia.png}"/><span style="display:none;">ca</span>
+                        </th:block>
+                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('FR')}">
+                            <img style="width:50%;" th:src="@{/img/flags/france.png}"/><span style="display:none;">fr</span>
+                        </th:block>
+                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('PT')}">
+                            <img style="width:50%;" th:src="@{/img/flags/portugal.png}"/><span style="display:none;">pt</span>
+                        </th:block>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+<script type="text/javascript" th:src="@{/js/learningMaterialsDb.js}"></script>
+</body>
+</html>

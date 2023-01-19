@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-steps/1.1.0/demo/css/jquery.steps.css}"/>
+    <script type="text/javascript" th:src="@{/webjars/jquery-steps/1.1.0/build/jquery.steps.js}"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+
+    <title th:text="#{ttr.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="container">
+                <div class="row mx-2 mt-5">
+                    <p class="fs-3 my-blue fw-bold mb-4 text-center" th:text="#{ttr.extendedTTRModuleUppercase}"></p>
+                </div>
+                <div class="row mx-2 mb-5">
+                    <div class="borderRadiusBlueBorderWhiteBackground col-3 text-center py-4">
+                        <p class="my-blue fw-bold fs-4" th:text="#{pm.moduleInfoUppercase}"></p>
+                        <p class="fs-6" th:text="#{ttr.moduleIntro}">
+                        </p>
+                        <div id="light1">
+                            <a class="boxclose" id="boxclose1" onclick="lightbox_close('mod1Video', '1');"></a>
+                            <video id="mod1Video" width="600" controls class="d-none">
+                                <source th:src="@{/video/mod1 - TTR.mp4}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div id="fade1" onClick="lightbox_close('mod1Video', '1');"></div>
+                        <a onclick="lightbox_open('mod1Video', '1');">
+                            <img class="video-preview borderRadius w-80" th:src="@{/img/video_previews/mod1.jpg}"/>
+                        </a>
+                    </div>
+                    <div class="col-9">
+                        <form action="/saveAnswers" method="post">
+                            <div id="ttrSteps">
+                                <th:block th:each="category : ${ttrModule.getCategoryList()}">
+                                    <h3 th:text="${category.getTranslations().get(language)}" th:with="language=${language}"></h3>
+                                    <section>
+                                        <div class="row">
+                                            <div class="col-10 offset-1" th:id="${category.getId()}">
+                                                <!-- FORM GROUP PER CATEGORIE SENZA DOMANDE FACOLTATIVE -->
+                                                <div class="form-group mb-3" th:if="${category.getId() == 1 or category.getId() == 4}">
+                                                    <th:block  th:each="question : ${category.getQuestions()}">
+                                                        <label class="green-label w-100 py-2 px-4">
+                                                            <div class="d-flex justify-content-center text-center">
+                                                                <p class="fs-5 flex-grow-1 ps-4" th:text="${question.getTranslations().get(language).getText()}" th:with="language=${language}"></p>
+                                                                <a class="fs-5 white-anchor" target="_blank" th:href="${question.getLearningMaterials().get(0).getLink()}"><i class="fas fa-question-circle"></i></a>
+                                                            </div>
+                                                        </label>
+                                                        <th:block th:if="${question.getQuestionList().size() > 0}">
+                                                            <th:block th:each="questionChild : ${question.getQuestionList()}">
+                                                                <label class="sub-label w-100 py-2 px-4" th:text="${questionChild.getTranslations().get(language).getText()}" th:with="language=${language}"></label>
+                                                                <th:block th:if="${questionChild.getAnswerList().size() > 0}">
+                                                                    <div class="white-background p-3 mb-3">
+                                                                        <th:block th:each="answer : ${questionChild.getAnswerList()}">
+                                                                            <label class="d-flex align-items-center ps-3">
+                                                                                <span class="pe-2" th:id="'span_'+${questionChild.getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+                                                                                <input th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(questionChild) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(questionChild).equals(answer)} ? ${moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(questionChild)}" type="radio" th:name="'question_'+${questionChild.getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                                            </label>
+                                                                        </th:block>
+                                                                    </div>
+                                                                </th:block>
+                                                            </th:block>
+                                                        </th:block>
+                                                        <th:block th:if="${question.getQuestionList().size() == 0}">
+                                                            <div class="white-background p-3 mb-3">
+                                                                <th:block th:each="answer : ${question.getAnswerList()}">
+                                                                    <label class="d-flex align-items-center ps-3">
+                                                                        <span class="pe-2" th:id="'span_'+${question.getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+                                                                        <input type="radio" th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(question) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(question).equals(answer)} ? ${moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(question)}" th:name="'question_'+${question.getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                                    </label>
+                                                                </th:block>
+                                                            </div>
+                                                        </th:block>
+                                                    </th:block>
+                                                </div>
+                                                <!-- FINE FORM GROUP PER CATEGORIE SENZA DOMANDE FACOLTATIVE -->
+                                                <!-- FORM GROUP PER CATEGORIA 2 -->
+                                                <div class="form-group mb-3" th:if="${category.getId() == 2}">
+                                                    <label class="green-label w-100 py-2 px-4">
+                                                        <div class="d-flex justify-content-center text-center">
+                                                            <p class="fs-5 flex-grow-1 ps-4" th:text="${category.getQuestions().get(0).getTranslations().get(language).getText()}" th:with="language=${language}"></p>
+                                                            <a class="fs-5 white-anchor" target="_blank" th:href="${category.getQuestions().get(0).getLearningMaterials().get(0).getLink()}"><i class="fas fa-question-circle"></i></a>
+                                                        </div>
+                                                    </label>
+                                                    <div class="white-background p-3 mb-3">
+                                                        <th:block th:each="answer : ${category.getQuestions().get(0).getAnswerList()}">
+                                                            <label class="d-flex align-items-center ps-3">
+                                                                <span class="pe-2" th:id="'span_'+${category.getQuestions().get(0).getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+                                                                <input type="radio" th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(category.getQuestions().get(0)) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(category.getQuestions().get(0)).equals(answer)} ? ${moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(category.getQuestions().get(0))}" th:name="'question_'+${category.getQuestions().get(0).getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                            </label>
+                                                        </th:block>
+                                                    </div>
+                                                    <div id="question2Category2" class="d-none">
+                                                        <label class="green-label w-100 py-2 px-4">
+                                                            <div class="d-flex justify-content-center text-center">
+                                                                <p class="fs-5 flex-grow-1 ps-4" th:text="${category.getQuestions().get(1).getTranslations().get(language).getText()}" th:with="language=${language}"></p>
+                                                                <a class="fs-5 white-anchor" target="_blank" th:href="${category.getQuestions().get(1).getLearningMaterials().get(0).getLink()}"><i class="fas fa-question-circle"></i></a>
+                                                            </div>
+                                                        </label>
+                                                        <div class="p-3 mb-3" id="question2Answers">
+                                                            <th:block th:if="${category.getQuestions().get(1).getQuestionList().size() > 0}">
+                                                                <th:block th:each="questionChild : ${category.getQuestions().get(1).getQuestionList()}">
+                                                                    <label class="sub-label w-100 py-2 px-4" th:text="${questionChild.getTranslations().get(language).getText()}" th:with="language=${language}"></label>
+                                                                    <th:block th:if="${questionChild.getAnswerList().size() > 0}">
+                                                                        <div class="white-background p-3 mb-3">
+                                                                            <th:block th:each="answer : ${questionChild.getAnswerList()}">
+                                                                                <label class="d-flex align-items-center ps-3">
+                                                                                    <span class="pe-2" th:id="'span_'+${questionChild.getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+                                                                                    <input th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(questionChild) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(questionChild).equals(answer)} ? ${moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(questionChild)}" type="radio" th:name="'question_'+${questionChild.getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                                                </label>
+                                                                            </th:block>
+                                                                        </div>
+                                                                    </th:block>
+                                                                </th:block>
+                                                            </th:block>
+                                                        </div>
+                                                    </div>
+                                                    <div id="question3Category2" class="d-none"> <!-- DIV QUESTION3CATEGORY2 -->
+                                                        <label  id="question3category2label" class="green-label w-100 py-2 px-4">
+                                                            <div class="d-flex justify-content-center text-center">
+                                                                <p class="fs-5 flex-grow-1 ps-4" th:text="${category.getQuestions().get(2).getTranslations().get(language).getText()}" th:with="language=${language}"></p>
+                                                                <a class="fs-5 white-anchor" target="_blank" th:href="${category.getQuestions().get(2).getLearningMaterials().get(0).getLink()}"><i class="fas fa-question-circle"></i></a>
+                                                            </div>
+                                                        </label>
+                                                        <div class="p-3 mb-3" id="question3Answers">
+                                                            <th:block th:if="${category.getQuestions().get(2).getQuestionList().size() > 0}">
+                                                                <div class="d-none" th:each="questionChild : ${category.getQuestions().get(2).getQuestionList()}" th:id="'questionChild_'+${questionChild.getId()}">
+                                                                    <label class="sub-label w-100 py-2 px-4" th:text="${questionChild.getTranslations().get(language).getText()}" th:with="language=${language}"></label>
+                                                                    <th:block th:if="${questionChild.getAnswerList().size() > 0}">
+                                                                        <div class="white-background p-3 mb-3">
+                                                                            <th:block th:each="answer : ${questionChild.getAnswerList()}">
+                                                                                <label class="d-flex align-items-center ps-3">
+                                                                                    <span class="pe-2" th:id="'span_'+${questionChild.getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+                                                                                    <input th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(questionChild) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(questionChild).equals(answer)} ? ${moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(questionChild)}" type="radio" th:name="'question_'+${questionChild.getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                                                </label>
+                                                                            </th:block>
+                                                                        </div>
+                                                                    </th:block>
+                                                                </div>
+                                                            </th:block>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- FINE FORM GROUP PER CATEGORIA 2 -->
+                                                <!-- FORM GROUP PER CATEGORIA 3 -->
+                                                <div class="form-group mb-3" th:if="${category.getId() == 3}">
+                                                    <label class="green-label w-100 py-2 px-4">
+                                                        <div class="d-flex justify-content-center text-center">
+                                                            <p class="fs-5 flex-grow-1 ps-4" th:text="${category.getQuestions().get(0).getTranslations().get(language).getText()}" th:with="language=${language}"></p>
+                                                            <a class="fs-5 white-anchor" target="_blank" th:href="${category.getQuestions().get(0).getLearningMaterials().get(0).getLink()}"><i class="fas fa-question-circle"></i></a>
+                                                        </div>
+                                                    </label>
+                                                    <div class="white-background p-3 mb-3">
+                                                        <th:block th:each="answer : ${category.getQuestions().get(0).getAnswerList()}">
+                                                            <label class="d-flex align-items-center ps-3">
+                                                                <span class="pe-2" th:id="'span_'+${category.getQuestions().get(0).getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+                                                                <input type="radio" th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(category.getQuestions().get(0)) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(category.getQuestions().get(0)).equals(answer)} ? ${moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(category.getQuestions().get(0))}" th:name="'question_'+${category.getQuestions().get(0).getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                            </label>
+                                                        </th:block>
+                                                    </div>
+                                                    <div id="question2Category3" class="d-none">
+                                                        <label class="green-label w-100 py-2 px-4">
+                                                            <div class="d-flex justify-content-center text-center">
+                                                                <p class="fs-5 flex-grow-1 ps-4" th:text="${category.getQuestions().get(1).getTranslations().get(language).getText()}" th:with="language=${language}"></p>
+                                                                <a class="fs-5 white-anchor" target="_blank" th:href="${category.getQuestions().get(1).getLearningMaterials().get(0).getLink()}"><i class="fas fa-question-circle"></i></a>
+                                                            </div>
+                                                        </label>
+                                                        <div class="white-background p-3 mb-3">
+                                                            <th:block th:each="answer : ${category.getQuestions().get(1).getAnswerList()}">
+                                                                <label class="d-flex align-items-center ps-3">
+                                                                    <span class="pe-2" th:id="'span_'+${category.getQuestions().get(1).getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+                                                                    <input type="radio" th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(category.getQuestions().get(1)) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(category.getQuestions().get(1)).equals(answer)} ? ${moduleInstance.getCategoryCategoryInstanceSortedMap().get(category).getQuestionAnswerSortedMap().get(category.getQuestions().get(1))}" th:name="'question_'+${category.getQuestions().get(1).getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                                </label>
+                                                            </th:block>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- FINE FORM GROUP PER CATEGORIA 3 -->
+                                            </div>
+                                        </div>
+                                    </section>
+                                </th:block>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+<script type="text/javascript" th:src="@{/js/ttr.js}"></script>
+</body>
+</html>

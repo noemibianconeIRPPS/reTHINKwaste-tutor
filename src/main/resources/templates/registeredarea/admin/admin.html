@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.multiselect.css}"/>
+    <script type="text/javascript" th:src="@{/js/jquery.multiselect.js}"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+
+    <title th:text="#{profile.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container d-flex flex-column mt-4">
+        <div class="row">
+            <div class="borderRadiusBlueBorder p-3 text-center">
+                <span class="fw-bold my-blue" th:text="#{admin.pleaseClickOnSomethingEdit}"></span>
+                <div class="d-flex justify-content-around my-3">
+                    <button class="btn btn-custom-dark-blue" id="reportGeneralComments" th:text="#{admin.reportProfileDescriptionText}"></button>
+                    <button class="btn btn-custom-dark-blue ml-2" id="reportProfileLevel">REPORT - PROFILE LEVEL TEXT</button>
+                    <button class="btn btn-custom-dark-blue ml-2" id="questions">QUESTIONS TEXT</button>
+                    <button class="btn btn-custom-dark-blue ml-2" id="answers">ANSWERS TEXT</button>
+                    <button class="btn btn-custom-dark-blue ml-2" id="learningMaterials">LEARNING MATERIALS</button>
+                </div>
+                <span class="fw-bold my-blue" th:text="#{admin.orAdd}"></span>
+                <div class="d-flex justify-content-around my-3">
+                    <button class="btn btn-custom-dark-blue" id="addLearningMaterialModalButton" data-bs-toggle="modal" data-bs-target="#addLearningMaterialModal">LEARNING MATERIAL</button>
+                </div>
+            </div>
+            <div class="mt-3" id="tableFragment" th:fragment="tableFragment">
+                <table id="reportTable" class="cell-border d-none" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>Module number</th>
+                        <th>Category</th>
+                        <th>Language</th>
+                        <th>Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="report : ${reports}">
+                        <th:block th:each="profile : ${report.getProfileList()}">
+                            <th:block th:each="language : ${profile.getTranslations().keySet()}">
+                                <tr th:if="${!profile.getTranslations().get(language).isEmpty()}">
+                                    <td class="vertical-align-baseline td-w-10" th:text="${report.getId()}"></td>
+                                    <td th:id="'categoryId_'+${profile.getCategory().getId()}"  class="vertical-align-baseline categoryId td-w-20">
+                                        <p class="categoryTranslationEditText" th:text="${profile.getCategory().getTranslations().get(language)}"></p>
+                                        <i class="fas fa-pencil-alt categoryTranslationEditIcon float-end"></i>
+                                        <i class="fas fa-times categoryTranslationCloseIcon d-none float-end ms-4"></i>
+                                        <i class="fas fa-save categoryTranslationSaveIcon d-none float-end"></i>
+                                    </td>
+                                    <td class="vertical-align-baseline language td-w-10" th:text="${language}"></td>
+                                    <td th:id="'profileId_'+${profile.getId()}" class="profileId td-w-60 vertical-align-baseline">
+                                        <p class="translationEditText" th:text="${profile.getTranslations().get(language)}"></p>
+                                        <i class="fas fa-pencil-alt translationEditIcon float-end"></i>
+                                        <i class="fas fa-times translationCloseIcon d-none float-end ms-4"></i>
+                                        <i class="fas fa-save translationSaveIcon d-none float-end"></i>
+                                    </td>
+                                </tr>
+                            </th:block>
+                        </th:block>
+                    </th:block>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>Module number</th>
+                        <th>Category</th>
+                        <th>Language</th>
+                        <th>Description</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- PROFILE LEVEL TEXT -->
+            <div class="mt-3" id="reportProfileLevelFragment" th:fragment="reportProfileLevelFragment">
+                <table id="reportProfileLevelTable" class="cell-border d-none" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>Profile id</th>
+                        <th>Category</th>
+                        <th>Language</th>
+                        <th>Name</th>
+                        <th>Evaluation</th>
+                        <th>General comment</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="profile : ${profiles}">
+                        <th:block th:each="subprofile : ${profile.getSubprofiles()}">
+                            <th:block th:each="language : ${subprofile.getTranslations().keySet()}">
+                                <tr th:if="${subprofile.getTranslations().get(language) != null}">
+                                    <td class="vertical-align-baseline td-w-10" th:text="${profile.getId()}"></td>
+                                    <td class="vertical-align-baseline td-w-10" th:text="${profile.getCategory().getTranslations().get(language)}"></td>
+                                    <td class="vertical-align-baseline language td-w-10" th:text="${language}"></td>
+                                    <td th:id="'subprofileId_'+${subprofile.getId()}" class="profileId td-w-10 subprofileId vertical-align-baseline">
+                                        <p class="subprofileNameTranslationEditText" th:text="${subprofile.getTranslations().get(language).getName()}"></p>
+                                        <i class="fas fa-pencil-alt subprofileNameTranslationEditIcon float-end"></i>
+                                        <i class="fas fa-times subprofileNameTranslationCloseIcon d-none float-end ms-4"></i>
+                                        <i class="fas fa-save subprofileNameTranslationSaveIcon d-none float-end"></i>
+                                    </td>
+                                    <td th:id="'subprofileId_'+${subprofile.getId()}"  class="vertical-align-baseline subprofileId td-w-30">
+                                        <p class="subprofileEvaluationTranslationEditText" th:text="${subprofile.getTranslations().get(language).getEvaluation()}"></p>
+                                        <i class="fas fa-pencil-alt subprofileEvaluationTranslationEditIcon float-end"></i>
+                                        <i class="fas fa-times subprofileEvaluationTranslationCloseIcon d-none float-end ms-4"></i>
+                                        <i class="fas fa-save subprofileEvaluationTranslationSaveIcon d-none float-end"></i>
+                                    </td>
+                                    <td th:id="'subprofileId_'+${subprofile.getId()}" class="profileId td-w-30 subprofileId vertical-align-baseline">
+                                        <p class="subprofileGeneralCommentTranslationEditText" th:text="${subprofile.getTranslations().get(language).getGeneralComment() != null} ? ${subprofile.getTranslations().get(language).getGeneralComment()} : 'NO DESCRIPTION PROVIDED'"></p>
+                                        <i class="fas fa-pencil-alt subprofileGeneralCommentTranslationEditIcon float-end"></i>
+                                        <i class="fas fa-times subprofileGeneralCommentTranslationCloseIcon d-none float-end ms-4"></i>
+                                        <i class="fas fa-save subprofileGeneralCommentTranslationSaveIcon d-none float-end"></i>
+                                    </td>
+                                </tr>
+                            </th:block>
+                        </th:block>
+                    </th:block>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>Profile id</th>
+                        <th>Category</th>
+                        <th>Language</th>
+                        <th>Name</th>
+                        <th>Evaluation</th>
+                        <th>General comment</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- QUESTIONS FRAGMENT -->
+
+            <div class="mt-3" id="questionsFragment" th:fragment="questionsFragment">
+                <table id="questionsTable" class="cell-border d-none" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>Module number</th>
+                        <th>Category</th>
+                        <th>Language</th>
+                        <th>Question</th>
+                        <th>Guideline</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="module : ${modules}">
+                        <th:block th:each="category : ${module.getCategoryList()}">
+                            <th:block th:each="language : ${category.getTranslations().keySet()}">
+                                <th:block th:each="question : ${category.getQuestions()}">
+                                    <tr th:if="${!category.getTranslations().get(language).isEmpty()}">
+                                        <td class="vertical-align-baseline td-w-10" th:text="${module.getId()}"></td>
+                                        <td th:id="'categoryId_'+${category.getId()}" class="vertical-align-baseline categoryId td-w-20">
+                                            <p class="categoryEditText" th:text="${category.getTranslations().get(language)}"></p>
+                                            <i class="fas fa-pencil-alt categoryEditIcon float-end"></i>
+                                            <i class="fas fa-times categoryCloseIcon d-none float-end ms-4"></i>
+                                            <i class="fas fa-save categorySaveIcon d-none float-end"></i>
+                                        </td>
+                                        <td class="vertical-align-baseline language td-w-10" th:text="${language}"></td>
+                                        <td th:id="'questionId_'+${question.getId()}" class="questionId td-w-30 vertical-align-baseline">
+                                            <p class="questionEditText" th:text="${question.getTranslations().get(language).getText()}"></p>
+                                            <i class="fas fa-pencil-alt questionEditIcon float-end"></i>
+                                            <i class="fas fa-times questionCloseIcon d-none float-end ms-4"></i>
+                                            <i class="fas fa-save questionSaveIcon d-none float-end"></i>
+                                        </td>
+                                        <td th:id="'questionId_'+${question.getId()}" class="questionIdForGuideline td-w-30 vertical-align-baseline">
+                                            <p class="questionGuidelineEditText" th:text="${question.getTranslations().get(language).getGuideline() != null} ?
+                                            ${question.getTranslations().get(language).getGuideline()} :
+                                            'NO GUIDELINE'"></p>
+                                            <i th:if="${question.getTranslations().get(language).getGuideline() != null}" class="fas fa-pencil-alt questionGuidelineEditIcon float-end"></i>
+                                            <i class="fas fa-times questionGuidelineCloseIcon d-none float-end ms-4"></i>
+                                            <i class="fas fa-save questionGuidelineSaveIcon d-none float-end"></i>
+                                        </td>
+                                    </tr>
+                                    <th:block th:if="${question.getQuestionList().size() > 0}">
+                                        <tr th:if="${!category.getTranslations().get(language).isEmpty()}" th:each="questionChild : ${question.getQuestionList()}">
+                                            <td class="vertical-align-baseline td-w-10" th:text="${module.getId()}"></td>
+                                            <td th:id="'categoryId_'+${category.getId()}" class="vertical-align-baseline categoryId td-w-20">
+                                                <p class="categoryEditText" th:text="${category.getTranslations().get(language)}"></p>
+                                                <i class="fas fa-pencil-alt categoryEditIcon float-end"></i>
+                                                <i class="fas fa-times categoryCloseIcon d-none float-end ms-4"></i>
+                                                <i class="fas fa-save categorySaveIcon d-none float-end"></i>
+                                            </td>
+                                            <td class="vertical-align-baseline language td-w-10" th:text="${language}"></td>
+                                            <td th:id="'questionId_'+${questionChild.getId()}" class="questionId td-w-30 vertical-align-baseline">
+                                                <p class="questionEditText" th:text="${questionChild.getTranslations().get(language).getText()}"></p>
+                                                <i class="fas fa-pencil-alt questionEditIcon float-end"></i>
+                                                <i class="fas fa-times questionCloseIcon d-none float-end ms-4"></i>
+                                                <i class="fas fa-save questionSaveIcon d-none float-end"></i>
+                                            </td>
+                                            <td th:id="'questionId_'+${questionChild.getId()}" class="questionIdForGuideline td-w-30 vertical-align-baseline">
+                                                <p class="questionGuidelineEditText" th:text="${questionChild.getTranslations().get(language).getGuideline() != null} ?
+                                            ${questionChild.getTranslations().get(language).getGuideline()} :
+                                            'NO GUIDELINE'"></p>
+                                                <i th:if="${questionChild.getTranslations().get(language).getGuideline() != null}" class="fas fa-pencil-alt questionGuidelineEditIcon float-end"></i>
+                                                <i class="fas fa-times questionGuidelineCloseIcon d-none float-end ms-4"></i>
+                                                <i class="fas fa-save questionGuidelineSaveIcon d-none float-end"></i>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                </th:block>
+                            </th:block>
+                        </th:block>
+                    </th:block>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>Module number</th>
+                        <th>Category</th>
+                        <th>Language</th>
+                        <th>Question</th>
+                        <th>Guideline</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- QUESTIONS END -->
+
+            <!-- ANSWERS FRAGMENT -->
+            <div class="mt-3" id="answersFragment" th:fragment="answersFragment">
+                <table id="answersTable" class="cell-border d-none" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>Module number</th>
+                        <th>Question</th>
+                        <th>Language</th>
+                        <th>Answer</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="module : ${modulesForAnswers}">
+                        <th:block th:each="category : ${module.getCategoryList()}">
+                            <th:block th:each="language : ${category.getTranslations().keySet()}">
+                                <th:block th:each="question : ${category.getQuestions()}">
+                                    <th:block th:each="answer : ${question.getAnswerList()}">
+                                        <tr th:if="${question.getTranslations().get(language) != null}">
+                                            <td class="vertical-align-baseline td-w-10" th:text="${module.getId()}"></td>
+                                            <td th:text="${question.getTranslations().get(language).getText()}" class="vertical-align-baseline categoryId td-w-20"></td>
+                                            <td class="vertical-align-baseline language td-w-10" th:text="${language}"></td>
+                                            <td th:id="'answerId_'+${answer.getId()}" class="answerId td-w-30 vertical-align-baseline">
+                                                <p class="answerEditText" th:text="${answer.getTranslations().get(language)}"></p>
+                                                <i class="fas fa-pencil-alt answerEditIcon float-end"></i>
+                                                <i class="fas fa-times answerCloseIcon d-none float-end ms-4"></i>
+                                                <i class="fas fa-save answerSaveIcon d-none float-end"></i>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                    <th:block th:if="${question.getQuestionList().size() > 0}">
+                                        <th:block th:each="questionChild : ${question.getQuestionList()}">
+                                            <tr th:each="answer : ${questionChild.getAnswerList()}" th:if="${questionChild.getTranslations().get(language) != null}">
+                                                <td class="vertical-align-baseline td-w-10" th:text="${module.getId()}"></td>
+                                                <td th:text="${questionChild.getTranslations().get(language).getText()}" class="vertical-align-baseline categoryId td-w-20"></td>
+                                                <td class="vertical-align-baseline language td-w-10" th:text="${language}"></td>
+                                                <td th:id="'answerId_'+${answer.getId()}" class="answerId td-w-30 vertical-align-baseline">
+                                                    <p class="answerEditText" th:text="${answer.getTranslations().get(language)}"></p>
+                                                    <i class="fas fa-pencil-alt answerEditIcon float-end"></i>
+                                                    <i class="fas fa-times answerCloseIcon d-none float-end ms-4"></i>
+                                                    <i class="fas fa-save answerSaveIcon d-none float-end"></i>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                    </th:block>
+                                </th:block>
+                            </th:block>
+                        </th:block>
+                    </th:block>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>Module number</th>
+                        <th>Question</th>
+                        <th>Language</th>
+                        <th>Answer</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- ANSWERS END -->
+
+            <!-- LEARNING MATERIALS -->
+            <div class="mt-3" id="learningMaterialsFragment" th:fragment="learningMaterialsFragment">
+                <table id="learningMaterialsTable" class="cell-border d-none" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Link</th>
+                        <th>Title</th>
+                        <th>Language</th>
+                        <th>Type</th>
+                        <th>Module</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="learningMaterial : ${learningMaterials}">
+                        <tr>
+                            <td class="vertical-align-baseline td-w-10" th:text="${learningMaterial.getId()}"></td>
+                            <td th:id="'learningMaterialId_'+${learningMaterial.getId()}"  class="vertical-align-baseline learningMaterialId td-max-w-20">
+                                <p class="learningMaterialLinkEditText word-break-all" th:text="${learningMaterial.getLink()}"></p>
+                                <i class="fas fa-pencil-alt learningMaterialLinkEditIcon float-end"></i>
+                                <i class="fas fa-times learningMaterialLinkCloseIcon d-none float-end ms-4"></i>
+                                <i class="fas fa-save learningMaterialLinkSaveIcon d-none float-end"></i>
+                            </td>
+                            <td th:id="'learningMaterialId_'+${learningMaterial.getId()}"  class="vertical-align-baseline learningMaterialId td-w-20">
+                                <p class="learningMaterialTitleEditText" th:text="${learningMaterial.getTitle()}"></p>
+                                <i class="fas fa-pencil-alt learningMaterialTitleEditIcon float-end"></i>
+                                <i class="fas fa-times learningMaterialTitleCloseIcon d-none float-end ms-4"></i>
+                                <i class="fas fa-save learningMaterialTitleSaveIcon d-none float-end"></i>
+                            </td>
+                            <td th:id="'learningMaterialId_'+${learningMaterial.getId()}" class="learningMaterialId td-w-10 vertical-align-baseline">
+                                <p class="learningMaterialLanguageEditText" th:text="${learningMaterial.getLanguage().getAcronym()}"></p>
+                                <i class="fas fa-pencil-alt learningMaterialLanguageEditIcon float-end"></i>
+                                <select id="learningMaterialLanguageSelect" name="learningMaterialLanguageSelect" class="form-select form-select-sm d-none mb-2">
+                                    <option th:each="language : ${languages}"
+                                            th:value="${language.getId()}"
+                                            th:text="${language.getAcronym()}"
+                                            th:selected="${learningMaterial.getLanguage().equals(language)}"></option>
+                                </select>
+                                <i class="fas fa-times learningMaterialLanguageCloseIcon d-none float-end ms-4"></i>
+                                <i class="fas fa-save learningMaterialLanguageSaveIcon d-none float-end"></i>
+                            </td>
+                            <td th:id="'learningMaterialId_'+${learningMaterial.getId()}" class="learningMaterialId td-w-10 vertical-align-baseline">
+                                <p class="learningMaterialTypeEditText">
+                                    <th:block th:each="type : ${learningMaterial.getLearningMaterialTypes()}" th:text="${type.getType()} + ' '"></th:block>
+                                </p>
+                                <select id="learningMaterialTypeSelect" name="learningMaterialTypeSelect" class="d-none learningMaterialTypeSelectClass" multiple="multiple">
+                                    <option th:each="type : ${learningMaterialTypes}"
+                                            th:value="${type.getId()}"
+                                            th:text="${type.getType()}"
+                                            th:selected="${#lists.contains(learningMaterial.getLearningMaterialTypes(), type)}"></option>
+                                </select>
+                                <i class="fas fa-pencil-alt learningMaterialTypeEditIcon float-end"></i>
+                                <i class="fas fa-save learningMaterialTypeSaveIcon mt-2 d-none float-end"></i>
+                            </td>
+                            <td th:id="'learningMaterialId_'+${learningMaterial.getId()}" class="learningMaterialId td-w-20 vertical-align-baseline">
+                                <p class="learningMaterialModuleEditText">
+                                    <th:block th:each="module : ${learningMaterial.getModules()}" th:text="${module.getText()} + ' '"></th:block>
+                                </p>
+                                <select id="learningMaterialModuleSelect" name="learningMaterialModuleSelect" class="d-none learningMaterialModuleSelectClass" multiple="multiple">
+                                    <option th:each="module : ${learningMaterialModules}"
+                                            th:value="${module.getId()}"
+                                            th:text="${module.getText()}"
+                                            th:selected="${#lists.contains(learningMaterial.getModules(), module)}"></option>
+                                </select>
+                                <i class="fas fa-pencil-alt learningMaterialModuleEditIcon float-end"></i>
+                                <i class="fas fa-times learningMaterialModuleCloseIcon d-none float-end ms-4"></i>
+                                <i class="fas fa-save learningMaterialModuleSaveIcon d-none float-end"></i>
+                            </td>
+                            <td class="td-w-10 vertical-align-baseline">
+                                <i class="fas fa-trash-alt deleteLearningMaterial" th:id="'learningMaterialId_'+${learningMaterial.getId()}"></i>
+                            </td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th>Id</th>
+                        <th>Link</th>
+                        <th>Title</th>
+                        <th>Language</th>
+                        <th>Type</th>
+                        <th>Module</th>
+                        <th>Delete</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!-- LEARNING MATERIALS END -->
+
+        </div>
+        <div class="modal fade" id="addLearningMaterialModal" tabindex="-1" aria-labelledby="addLearningMaterialModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">ADD LEARNING MATERIAL</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="addLearningMaterialLink" class="form-label">Link</label>
+                            <input type="text" class="form-control" id="addLearningMaterialLink">
+                            <div class="alert alert-danger d-none" id="invalidUrl" role="alert">
+                                URL not valid!
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addLearningMaterialText" class="form-label">Text</label>
+                            <input type="text" class="form-control" id="addLearningMaterialText">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addLearningMaterialLanguage" class="form-label">Language</label>
+                            <select id="addLearningMaterialLanguage" name="addLearningMaterialLanguage" class="form-select form-select-sm mb-2">
+                                <option th:each="language : ${languages}"
+                                        th:value="${language.getId()}"
+                                        th:text="${language.getAcronym()}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addLearningMaterialTypes" class="form-label">Types</label>
+                            <select id="addLearningMaterialTypes" name="addLearningMaterialTypes" class="addLearningMaterialTypesClass" multiple="multiple">
+                                <option th:each="type : ${learningMaterialTypes}"
+                                        th:value="${type.getId()}"
+                                        th:text="${type.getType()}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addLearningMaterialModules" class="form-label">Modules</label>
+                            <select id="addLearningMaterialModules" name="addLearningMaterialModules" class="addLearningMaterialModulesClass" multiple="multiple">
+                                <option th:each="module : ${learningMaterialModules}"
+                                        th:value="${module.getId()}"
+                                        th:text="${module.getText()}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-custom-light-grey" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-custom-dark-blue" id="addLearningMaterial">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+<script type="text/javascript" th:src="@{/js/admin.js}"></script>
+</body>
+</html>

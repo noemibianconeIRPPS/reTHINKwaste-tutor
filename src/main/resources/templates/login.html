@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+    <script type="text/javascript" th:src="@{/js/login.js/}"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+
+    <title th:text="#{login.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container-fluid d-flex flex-column align-self-center mx-4 mt-5 mt-xl-0">
+        <div class="row align-items-center">
+            <div class="col-sm-4 offset-sm-4 col-12">
+                <div th:if="${param.registrationSuccess}" class="alert alert-success text-center mt-5" th:text="#{register.registrationSuccess}">
+                </div>
+                <div sec:authorize="isAnonymous()" th:if="${param.error}" class="alert alert-danger text-center" th:text="#{login.invalidUsernameAndPassword}">
+                </div>
+                <div th:if="${param.logout}" class="alert alert-success text-center mt-5" th:text="#{user.successLogout}">
+                </div>
+                <div sec:authorize="isAnonymous()" th:if="${param.sessionExpired}" class="alert alert-success text-center mt-5" th:text="#{user.sessionExpired}">
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-column align-self-center">
+            <p class="fs-3">
+                <b class="my-blue" th:text="#{login.welcome}"></b><th:block th:text="#{login.toThe}"></th:block><b class="my-blue">reTHINKwaste tutor</b>! <th:block th:text="#{login.sentence1}"></th:block></b>
+            </p>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-xl-5 col-12 mt-4">
+                <p class="fs-5 text-justify"><th:block th:text="#{login.sentence2}"></th:block><b th:title="#{login.paytHover}" class="my-blue" th:text="#{login.PAYT}"></b>&nbsp;<th:block th:text="#{login.and}"></th:block><b class="my-blue" th:title="#{login.kaytHover}" th:text="#{login.KAYT}"></b> <th:block th:text="#{login.sentence3}"></th:block><b class="my-blue" th:title="#{login.paytHover}" th:text="#{login.PAYT}"></b> <th:block th:text="#{login.sentence4}"></th:block></p>
+                <ul class="fs-5 text-justify">
+                    <li th:text="#{login.technologicalAndTechnicalRequirements}"></li>
+                    <li th:text="#{login.managementAndNormativeCriteria}"></li>
+                    <li th:text="#{login.awarenessRaisingMeasures}"></li>
+                    <li th:text="#{login.privacyManagement}"></li>
+                    <li th:text="#{login.integrationOfGreenPublicProcurementInContractingWasteUtilities}"></li>
+                    <li th:text="#{login.optimalBusinessPlan}"></li>
+                </ul>
+                <p class="fs-5 text-justify" th:text="#{login.sentence5}"></p>
+                <div class="d-flex w-100 justify-content-around mt-5">
+                    <a class="btn btn-custom w-25" th:href="@{/register}" th:text="#{registration.register}"></a>
+                    <a class="btn btn-custom w-25" data-bs-toggle="modal" data-bs-target="#loginModal" th:text="#{login.title}"></a>
+                </div>
+            </div>
+            <div class="col-xl-7 col-12">
+                <div class="d-flex flex-column">
+                    <div class="d-flex flex-column align-items-center p-2">
+                        <div id="lightIntro">
+                            <a class="boxclose" id="boxcloseIntro" onclick="lightbox_close('Intro', 'Intro');"></a>
+                            <video id="Intro" width="800" controls class="d-none">
+                                <source th:src="@{/video/intro.mp4}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div id="fadeIntro" onClick="lightbox_close('Intro', 'Intro');"></div>
+                        <div class="col-12 text-center">
+                            <a onclick="lightbox_open('Intro', 'Intro');">
+                                <img class="video-preview w-50" th:src="@{/img/video_previews/intro.png}"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<div class="modal" tabindex="-1" id="loginModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-10 offset-1">
+                        <form th:action="@{/login}" method="post">
+                            <div class="form-group">
+                                <label for="username">E-mail</label>
+                                <input type="text"
+                                       id="username"
+                                       name="username"
+                                       class="form-control"
+                                       autofocus="autofocus"
+                                       placeholder="Username"/>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="password">Password</label>
+                                <div class="input-group mt-3">
+                                    <input type="password"
+                                           id="password"
+                                           name="password"
+                                           class="form-control"
+                                           placeholder="Password"/>
+                                    <span class="input-group-text" id="password-icon">
+                                        <i class="fas fa-eye-slash"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-12 col-sm-6 offset-sm-3 mt-3">
+                                        <button type="submit"
+                                                name="login-submit"
+                                                id="login-submit"
+                                                class="btn btn-custom form-control">Log in</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="form-group text-center fw-bold my-3">
+                            <a style="color: #1cb3a7;" th:href="@{/forgotPassword}" th:text="#{login.forgotPassword}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+</body>
+</html>

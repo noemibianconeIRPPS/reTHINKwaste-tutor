@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-steps/1.1.0/demo/css/jquery.steps.css}"/>
+    <script type="text/javascript" th:src="@{/webjars/jquery-steps/1.1.0/build/jquery.steps.js}"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+
+    <title th:text="#{arm.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container-fluid">
+        <form action="/saveAnswers" method="post">
+            <div class="row mx-2 mt-5">
+                <p class="fs-3 my-blue fw-bold mb-4 text-center" th:text="#{arm.extendedARMModuleUppercase}"></p>
+            </div>
+            <div class="row mx-2 mb-5">
+                <div class="borderRadiusBlueBorderWhiteBackground col-4 text-center py-4">
+                    <p class="my-blue fw-bold fs-4" th:text="#{arm.moduleInfoUppercase}"></p>
+                    <p class="fs-6 text-justify" th:text="#{arm.introText}">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at nisl arcu. Suspendisse facilisis purus vel sem condimentum, at aliquet massa luctus. Nulla bibendum semper nunc, eget dapibus nibh ullamcorper id. Nullam commodo metus at velit consectetur pulvinar. Donec vehicula auctor felis et placerat. Phasellus ante lorem, commodo vel vehicula ut, vulputate lacinia erat. In laoreet eros eget nisl lobortis vulputate. Aliquam id gravida purus. Etiam dictum lectus sit amet nisl scelerisque laoreet. Pellentesque at lorem augue. Cras quis dignissim velit. Nullam feugiat consectetur quam ut facilisis. Donec pretium ligula massa, eu convallis augue hendrerit id.</p>
+                    <div id="light2">
+                        <a class="boxclose" id="boxclose3" onclick="lightbox_close('mod2Video', '2');"></a>
+                        <video id="mod2Video" width="600" controls class="d-none">
+                            <source th:src="@{/video/mod2 - ARM.mp4}" type="video/mp4">
+                        </video>
+                    </div>
+                    <div id="fade2" onClick="lightbox_close('mod2Video', '2');"></div>
+                    <a onclick="lightbox_open('mod2Video', '2');">
+                        <img class="video-preview borderRadius w-80" th:src="@{/img/video_previews/mod2.jpg}"/>
+                    </a>
+                </div>
+                <div class="col-8">
+                    <form action="/saveAnswers" method="post">
+                        <div id="armSteps">
+                            <th:block th:each="category : ${armModule.getCategoryList()}">
+                                <h3 th:text="${category.getTranslations().get(language)}" th:with="language=${language}"></h3>
+                                <section>
+                                    <div class="row">
+                                        <div class="col-10 offset-1" th:id="${category.getId()}">
+                                            <!-- FORM GROUP PER CATEGORIE SENZA DOMANDE FACOLTATIVE -->
+                                            <div class="form-group mb-3">
+                                                <div th:id="'question_'+${question.getId()}" th:each="question : ${category.getQuestions()}" th:classappend="${question.getId() == 84 || question.getId() == 85 || question.getId() == 86 || question.getId() == 87} ? 'd-none' : 'd-block'">
+                                                    <label class="green-label w-100 py-2 px-4" >
+                                                        <div class="d-flex justify-content-center text-center">
+                                                            <p class="fs-5 flex-grow-1 ps-4" th:text="${question.getTranslations().get(language).getText()}" th:with="language=${language}"></p>
+                                                            <a class="fs-5 white-anchor" target="_blank" th:href="${question.getLearningMaterials().get(0).getLink()}"><i class="fas fa-question-circle"></i></a>
+                                                        </div>
+                                                    </label>
+                                                    <div class="white-background p-3 mb-3">
+                                                        <th:block th:each="answer : ${question.getAnswerList()}">
+                                                            <th:block th:if="${question.getId != 88}">
+                                                                <label class="d-flex align-items-center ps-3">
+                                                                    <span class="pe-2" th:id="'span_'+${question.getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+
+                                                                    <input type="radio" th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceForMCSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceForMCSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceForMCSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceForMCSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(question) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceForMCSortedMap().get(category).getQuestionAnswerSortedMap().get(question).getAnswers().contains(answer)} ? ${moduleInstance.getCategoryCategoryInstanceForMCSortedMap().get(category).getQuestionAnswerSortedMap().get(question).getAnswers().get(0)}" th:name="'question_'+${question.getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                                </label>
+                                                            </th:block>
+                                                            <th:block th:if="${question.getId == 88}">
+                                                                <label class="d-flex align-items-center ps-3">
+                                                                    <span class="pe-2" th:id="'span_'+${question.getId()}" th:text="${answer.getTranslations().get(language)}" th:with="language=${language}"></span>
+
+                                                                    <input type="checkbox" th:checked="${moduleInstance != null and moduleInstance.getCategoryCategoryInstanceForMCSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceForMCSortedMap().containsKey(category) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceForMCSortedMap().get(category).getQuestionAnswerSortedMap() != null and
+                                                                                                moduleInstance.getCategoryCategoryInstanceForMCSortedMap().get(category).getQuestionAnswerSortedMap().containsKey(question) and
+                                                                                                moduleInstance.getCategoryCategoryInstanceForMCSortedMap().get(category).getQuestionAnswerSortedMap().get(question).getAnswers().contains(answer)}" th:name="'question_'+${question.getId()}" th:id="'answer_'+${answer.getId()}"/>
+                                                                </label>
+                                                            </th:block>
+                                                        </th:block>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- FINE FORM GROUP PER CATEGORIE SENZA DOMANDE FACOLTATIVE -->
+                                        </div>
+
+                                    </div>
+                                </section>
+                            </th:block>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+</main>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+<script type="text/javascript" th:src="@{/js/arm.js}"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.css}"/>
+    <script type="text/javascript" th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.js}"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+
+    <title th:text="#{profile.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container d-flex flex-column align-self-center">
+        <div class="row">
+            <div class="col-sm-6 offset-sm-3 borderRadiusBlueBackground p-3">
+                <div class="d-flex">
+                    <h2 class="white fw-bold mx-auto" th:text="#{changeProfile.yourInfo}"></h2>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="control-label white" th:text="#{changeProfile.email}"></label>
+                    <input id="email" class="form-control form-control-custom-disabled" th:value="${loggedUser.getEmail()}" disabled="disabled"/>
+                </div>
+                <div class="form-group my-3">
+                    <label for="change-password-icon" class="control-label white" th:text="#{changeProfile.currentPassword}"></label>
+                    <button type="button" id="change-password-icon" class="btn btn-custom-xs ms-2 mx-auto">
+                        CHANGE <i class="fas fa-pencil-alt ms-1"></i>
+                    </button>
+                </div>
+                <div class="form-group d-none changePassword my-5">
+                    <label for="newPassword" class="control-label white" th:text="#{changeProfile.newPassword}"></label>
+                    <div class="input-group">
+                        <input id="newPassword"
+                               class="form-control"
+                               type="password"/>
+                    </div>
+                    <label for="confirmNewPassword" class="control-label white" th:text="#{changeProfile.confirmNewPassword}"></label>
+                    <div class="input-group">
+                        <input id="confirmNewPassword"
+                               class="form-control"
+                               type="password"/>
+                    </div>
+                    <div class="alert alert-secondary mt-3 passwordMismatch d-none" th:text="#{changeProfile.passwordMismatch}" role="alert"></div>
+                </div>
+                <div class="form-group">
+                    <label for="firstname" class="control-label white" th:text="#{changeProfile.firstname}"></label>
+                    <input id="firstname"
+                           name="firstname"
+                           class="form-control" th:value="${loggedUser.getFirstname()}"/>
+                </div>
+                <div class="form-group">
+                    <label for="lastname" class="control-label white" th:text="#{changeProfile.lastname}"></label>
+                    <input id="lastname"
+                           class="form-control" th:value="${loggedUser.getLastname()}"/>
+                </div>
+                <div class="form-group">
+                    <label for="organizationName" class="control-label white" th:text="#{changeProfile.organizationName}"></label>
+                    <input id="organizationName"
+                           class="form-control" th:value="${loggedUser.getOrganizationName()}"/>
+                </div>
+                <div class="form-group">
+                    <label for="organizationType" class="control-label white" th:text="#{changeProfile.organizationType}"></label>
+                    <select class="form-select" id="organizationType" name="organizationType">
+                        <option th:each="organizationType : ${organizationTypes}"
+                                th:value="${organizationType.getId()}"
+                                th:text="${organizationType.getName()}" th:selected="${loggedUser.getOrganizationType().getId() == organizationType.getId()}"></option>
+                    </select>
+                </div>
+                <div class="form-group d-none mt-3" id="otherOrganizationTypeFormGroup">
+                    <input id="otherOrganizationType"
+                           class="form-control" th:value="${loggedUser.getOtherOrganizationType()}"/>
+                    <div class="alert alert-secondary mt-3 organizationOtherEmpty d-none" th:text="#{changeProfile.organizationOtherEmpty}" role="alert"></div>
+                </div>
+                <div class="form-group">
+                    <label for="website" class="control-label white" th:text="#{changeProfile.website}"></label>
+                    <input id="website"
+                           class="form-control" th:value="${loggedUser.getWebsite()}"/>
+                    <div class="alert alert-secondary mt-3 invalidWebsite d-none" th:text="#{changeProfile.invalidWebsite}" role="alert"></div>
+                </div>
+                <div class="form-group">
+                    <label for="places-autocomplete" class="control-label white" th:text="#{changeProfile.map}"></label>
+                    <input type="text"
+                           class="form-control"
+                           id="places-autocomplete"
+                           aria-describedby="button-addon1"
+                           name="country" th:value="${loggedUser.getPlace().getCountry()}">
+                </div>
+                <div class="alert alert-secondary mt-3 fillAllTheField d-none" th:text="#{changeProfile.fillAllTheField}" role="alert"></div>
+                <div class="d-flex mt-2">
+                    <button type="button" id="saveProfileChanges" class="btn btn-custom mx-auto" th:text="#{changeProfile.save}"></button>
+                </div>
+                <div class="d-flex justify-content-center mt-2">
+                    <a  class="white fw-bold" href="/" th:href="@{/registeredarea/profile}" th:text="#{changeProfile.back}"></a></span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+<script type="text/javascript" th:src="@{/js/change-profile.js}"></script>
+</body>
+</html>

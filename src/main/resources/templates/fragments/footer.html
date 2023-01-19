@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" lang="en">
+<th:block th:fragment="footer">
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="d-flex flex-row justify-content-between align-items-center">
+                <img class="img-fluid" th:src="@{/img/logo-footer.png}"/>
+                <a class="footer-anchor" href="https://www.vecteezy.com/free-vector/web" th:text="#{footer.webVectors}"></a>
+            </div>
+        </div>
+    </footer>
+</th:block>
+</html>

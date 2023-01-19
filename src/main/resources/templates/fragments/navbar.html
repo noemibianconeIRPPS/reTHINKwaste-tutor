@@ -1,0 +1,121 @@
+<th:block th:fragment="header" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <script>
+        $(document).delegate('.changeLanguage', 'click', function(e) {
+            var anchor = $(event.target).is('img') ? $(event.target).parent() : $(event.target);
+            var language = anchor.attr("class").replace("changeLanguage text-center", "");
+            language = language.replace("changeLanguage", "");
+            language = language.replace(" ", "").toLowerCase();
+            if (language != ''){
+                window.location.replace('?lang=' + language);
+            }
+        });
+    </script>
+    <header style="max-width: 100vw">
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md fixed-top w-100" style="max-width: 100vw">
+            <div class="container-fluid">
+
+                <div class="navbar-expanded-xl w-100">
+                    <div class="d-flex align-items-center">
+                        <div class="me-auto">
+                            <a th:href="'/'">
+                                <img class="me-3" th:src="@{/img/logo-bw.png}"></img>
+                            </a>
+                        </div>
+                        <div class="mx-auto py-2 navbar-menu w-80" sec:authorize="isAuthenticated()">
+                            <div class="d-flex justify-content-center mb-2">
+                                <span class="fw-bold my-blue" th:text="#{profile.selfAssessmentModules}">SELF-ASSESSMENT MODULES</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <a th:if="${loggedUser != null and !loggedUser.getRoles().?[id == 2].isEmpty()}" th:href="@{/registeredarea/admin}" class="navbar-menu-anchor-dark-blue px-4" th:title="#{navbar.admin}"><i class="fas fa-cogs"></i><span th:text="#{navbar.admin}"></span></a>
+                                <a th:href="@{/registeredarea/ttr}" class="navbar-menu-anchor px-4" th:title="#{navbar.extendedTTRUppercase}" th:text="#{navbar.extendedTTRUppercase}"></a>
+                                <a th:href="@{/registeredarea/arm}" class="navbar-menu-anchor px-4" th:title="#{navbar.extendedARMUppercase}" th:text="#{navbar.extendedARMUppercase}"></a>
+                                <a th:href="@{/registeredarea/pm}" class="navbar-menu-anchor px-4" th:title="#{navbar.extendedPMUppercase}" th:text="#{navbar.extendedPMUppercase}"></a>
+                                <a th:href="@{/registeredarea/igpp}" class="navbar-menu-anchor px-4 " th:title="#{navbar.extendedIGPPUppercase}" th:text="#{navbar.extendedIGPPUppercase}">IGPP</a>
+                                <a th:href="@{/registeredarea/mnc}" class="navbar-menu-anchor px-4" th:title="#{navbar.extendedMNCUppercase}" th:text="#{navbar.extendedMNCUppercase}"></a>
+                                <a th:href="@{/registeredarea/obp}" class="navbar-menu-anchor px-4" th:title="#{navbar.extendedOBPUppercase}" th:text="#{navbar.extendedOBPUppercase}"></a>
+                            </div>
+                        </div>
+                        <div class="ms-auto navbar-icons">
+                            <div class="d-flex justify-content-center mb-2" sec:authorize="isAuthenticated()">
+                                <a th:href="@{/logout}" class="fw-bold navbar-logout px-4" th:text="#{navbar.logout}"></a>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <a class="navbar-socials" href="https://twitter.com/rethinkwastertw" target="_blank" th:title="#{navbar.twitterRethinkWasteAccount}"><i class="fab fa-twitter fs-4 mx-1"></i></a>
+                                <a class="navbar-socials" href="https://www.linkedin.com/in/rethink-waste-rtw/?originalSubdomain=it" target="_blank" th:title="#{navbar.linkedinRethinkWasteAccount}"><i class="fab fa-linkedin-in fs-4 mx-1"></i></a>
+                                <a class="navbar-socials" href="https://www.youtube.com/channel/UC_NCF8yBVN93tNVfIAUd7lA" target="_blank" th:title="#{navbar.youtubeRethinkWasteAccount}"><i class="fab fa-youtube fs-4 mx-1"></i></a>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <a class="changeLanguage text-center changeLanguageEN">
+                                    <img style="width:50%;" th:src="@{/img/flags/united-kingdom.png}"/>
+                                </a>
+                                <!--<a class="changeLanguage text-center changeLanguageCA">
+                                    <img style="width:50%;" th:src="@{/img/flags/catalonia.png}"/>
+                                </a>-->
+                                <a class="changeLanguage text-center changeLanguageIT">
+                                    <img style="width:50%;" th:src="@{/img/flags/italy.png}"/>
+                                </a>
+                                <!--<a class="changeLanguage text-center changeLanguageES">
+                                    <img style="width:50%;" th:src="@{/img/flags/spain.png}"/>
+                                </a>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navbar-toggled-lg w-100">
+                    <div class="d-flex align-items-center">
+                        <div class="me-auto">
+                            <a th:href="'/'">
+                                <img class="me-3" th:src="@{/img/logo-bw.png}"></img>
+                            </a>
+                        </div>
+                        <div class="mx-auto navbar-dropdown navbar-menu" sec:authorize="isAuthenticated()">
+                            <div class="d-flex justify-content-center">
+                                <div class="dropdown">
+                                    <button class="btn btn-white-dark-green fw-bold dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{profile.selfAssessmentModules}">
+                                        SELF-ASSESSMENT MODULES
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a th:if="${loggedUser != null and not loggedUser.getRoles().?[id == 2].isEmpty()}" th:href="@{/registeredarea/admin}" class="navbar-menu-anchor-dark-blue px-4" th:title="#{navbar.admin}"><i class="fas fa-cogs"></i><span th:text="#{navbar.admin}"></span></a>
+                                        <a th:href="@{/registeredarea/ttr}" class="dropdown-item px-2" th:title="#{navbar.extendedTTRUppercase}" th:text="#{navbar.extendedTTRUppercase}"></a>
+                                        <a th:href="@{/registeredarea/arm}" class="px-2 dropdown-item" th:title="#{navbar.extendedARMUppercase}" th:text="#{navbar.extendedARMUppercase}"></a>
+                                        <a th:href="@{/registeredarea/pm}" class="dropdown-item px-2" th:title="#{navbar.extendedPMUppercase}" th:text="#{navbar.extendedPMUppercase}"></a>
+                                        <a th:href="@{/registeredarea/igpp}" class="px-2 dropdown-item" th:title="#{navbar.extendedIGPPUppercase}" th:text="#{navbar.extendedIGPPUppercase}">IGPP</a>
+                                        <a th:href="@{/registeredarea/mnc}" class="dropdown-item px-2" th:title="#{navbar.extendedMNCUppercase}" th:text="#{navbar.extendedMNCUppercase}"></a>
+                                        <a th:href="@{/registeredarea/obp}" class="dropdown-item px-2" th:title="#{navbar.extendedOBPUppercase}" th:text="#{navbar.extendedOBPUppercase}"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-auto navbar-icons">
+                            <div class="d-flex justify-content-center mb-2" sec:authorize="isAuthenticated()">
+                                <a th:href="@{/logout}" class="fw-bold navbar-logout pr-2 pl-0 px-md-4" th:text="#{navbar.logout}"></a>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <a href="https://twitter.com/rethinkwastertw" target="_blank" th:title="#{navbar.twitterRethinkWasteAccount}"><i class="fab fa-twitter fs-4 mx-1"></i></a>
+                                <a href="https://www.linkedin.com/in/rethink-waste-rtw/?originalSubdomain=it" target="_blank" th:title="#{navbar.linkedinRethinkWasteAccount}"><i class="fab fa-linkedin-in fs-4 mx-1"></i></a>
+                                <a href="https://www.youtube.com/channel/UC_NCF8yBVN93tNVfIAUd7lA" target="_blank" th:title="#{navbar.youtubeRethinkWasteAccount}"><i class="fab fa-youtube fs-4 mx-1"></i></a>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <a class="changeLanguage text-center changeLanguageEN">
+                                    <img style="width:50%;" th:src="@{/img/flags/united-kingdom.png}"/>
+                                </a>
+                                <!--<a class="changeLanguage text-center changeLanguageCA">
+                                    <img style="width:50%;" th:src="@{/img/flags/catalonia.png}"/>
+                                </a>-->
+                                <a class="changeLanguage text-center changeLanguageIT">
+                                    <img style="width:50%;" th:src="@{/img/flags/italy.png}"/>
+                                </a>
+                                <!--<a class="changeLanguage text-center changeLanguageES">
+                                    <img style="width:50%;" th:src="@{/img/flags/spain.png}"/>
+                                </a>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+</th:block>

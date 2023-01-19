@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+
+    <script>
+
+        window.onload = function() {
+            if(document.getElementById("loginButton") !== null) {
+                if(document.URL.indexOf("?click=loginButton") >= 0){
+                    document.getElementById('loginButton').click();
+                }
+            }
+        };
+
+
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+    <style>
+        #cy {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        #eat {
+            position: absolute;
+            left: 1em;
+            top: 1em;
+            font-size: 1em;
+            z-index: -1;
+            color: #c88;
+        }
+    </style>
+
+    <title th:text="#{learningMaterials.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container d-flex flex-column align-self-center">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <p class="fs-5 text-justify"><b class="my-blue" th:title="#{login.paytHover}" th:text="#{learningMaterials.paytUppercase}"></b> <th:block th:text="#{learningMaterials.firstSentence}"></th:block> <b class="my-blue" th:title="#{login.kaytHover}" th:text="#{learningMaterials.kaytUppercase}"></b> <th:block th:text="#{learninMaterial.secondSentence}"></th:block> </p>
+            </div>
+            <div class="col-lg-4 text-center fw-lighter">
+                <!--<a class="btn btn-custom fs-3 my-5 d-flex mx-auto" style="width: 100px;height: 100px;border-radius: 100%;text-align: center;" th:href="@{/learningMaterials/map}">
+                    <span class="align-self-center" style="font-size: 1rem" th:text="#{learningMaterials.goToTheMap}"></span>
+                </a>-->
+                <a class="btn btn-custom fs-3 my-5 d-flex mx-auto" style="width: 200px;height: 200px;border-radius: 100%;text-align: center;" th:href="@{/learningMaterials/db}">
+                    <span class="align-self-center" style="font-size: 1.5rem" th:text="#{learningMaterials.browseTheDb}"></span>
+                </a>
+            </div>
+        </div>
+        <a class="btn btn-custom fs-6 mx-auto mt-5" th:href="@{/}" th:text="#{learningMaterials.backToIndex}"></a>
+    </div>
+</main>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+<script type="text/javascript" th:src="@{/js/learningMaterials.js}"></script>
+</body>
+</html>

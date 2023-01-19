@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <meta name="title" content="reTHINKwaste tutor">
+    <meta name="description" content="I'm the reTHINKwaste tutor! I will help you in filling in your first self-assessment regarding urban waste governance.">
+    <meta name="keywords" content="PAYT, KAYT, models, waste, pricing, self-assessment, governance, urban, business, plan, technological and technical requirements, management and normative criteria, awareness raising measures, privacy management, integration of green public procurement in contracting waste utilities, optimal business plan, pay-as-you-throw, know-as-you-throw, urban waste governance">
+    <meta name="robots" content="index, nofollow">
+    <meta name="language" content="English">
+    <meta name="google-site-verification" content="d-2l3kkpATQ9TY8XMFDpSob8LtXMUqTDsL4gTonrGR8" />
+    <meta name="google-site-verification" content="zrviwf9L9db9dmyA76eTDC5TlTHDOVUckgZFCUK6I3s" />
+
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+    <script type="text/javascript" th:src="@{/js/index.js/}"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+
+    <title th:text="#{index.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container d-flex flex-column align-self-center mt-5 mt-xl-0">
+        <div class="big-viewport">
+            <div class="row align-items-center mt-lg-0 mt-4">
+                <div class="col-md-4 col-lg-3">
+                    <div class="row d-none animate__animated animate__bounceOutLeft learning-materials-icon">
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/video.png}"/></div>
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/chart.png}"/></div>
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/file.png}"/></div>
+                    </div>
+                </div>
+                <div class="col-md-5 col-lg-6">
+                    <p class="fs-5 text-justify"><b class="my-blue" th:title="#{login.paytHover}" th:text="#{index.paytUppercase}"></b> <th:block th:text="#{index.andLowercase}"></th:block> <b class="my-blue" th:title="#{login.kaytHover}" th:text="#{index.kaytUppercase}"></b> <th:block th:text="#{index.firstSentence}"></th:block></p>
+                </div>
+                <div class="col-12 col-sm-6 offset-sm-3 offset-md-0 col-md-3 col-lg-3">
+                    <a class="btn btn-custom top-side-button w-100" th:href="@{/learningMaterials}"><th:block th:text="#{index.learning}"></th:block><br> <th:block th:text="#{index.materials}"></th:block></a>
+                </div>
+            </div>
+            <div class="row align-items-center mt-5">
+                <div class="col-md-4 col-lg-3">
+                    <a class="btn btn-custom bottom-side-button w-100" th:href="@{/login}"><th:block th:text="#{index.selfAssessment}"></th:block><br><th:block th:text="#{index.toolkit}"></th:block></a>
+                </div>
+                <div class="col-md-5 col-lg-6">
+                    <p class="fs-5 text-justify"><th:block th:text="#{index.secondSentence}"></th:block> <b class="my-blue" th:title="#{login.paytHover}" th:text="#{index.payAsYouThrow}"></b> <th:block th:text="#{index.thirdSentence}"></th:block> <b class="my-blue" th:title="#{login.kaytHover}" th:text="#{index.knowAsYouThrow}"></b> <th:block th:text="#{index.fourthSentence}"></th:block></p>
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <div class="row d-none animate__animated animate__bounceOutRight self-assessment-icons">
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/score.png}"/></div>
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/glass.png}"/></div>
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/gears.png}"/></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="small-viewport">
+            <div class="row align-items-center mt-lg-0 mt-4">
+                <div class="col-8 offset-2 mb-3 mb-sm-0 col-sm-6 offset-sm-0">
+                    <div class="row d-none animate__animated animate__bounceOutLeft learning-materials-icon">
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/video.png}"/></div>
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/chart.png}"/></div>
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/file.png}"/></div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <p class="fs-5 text-justify"><b class="my-blue" th:title="#{login.paytHover}" th:text="#{index.paytUppercase}"></b> <th:block th:text="#{index.andLowercase}"></th:block> <b class="my-blue" th:title="#{login.kaytHover}" th:text="#{index.kaytUppercase}"></b> <th:block th:text="#{index.firstSentence}"></th:block></p>
+                </div>
+                <div class="col-8 offset-2 col-sm-6 offset-sm-3">
+                    <a class="btn btn-custom top-side-button w-100" th:href="@{/learningMaterials}"><th:block th:text="#{index.learning}"></th:block><br> <th:block th:text="#{index.materials}"></th:block></a>
+                </div>
+            </div>
+            <div class="row align-items-center mt-5">
+                <div class="col-8 offset-2 mb-3 mb-sm-0 col-sm-6 offset-sm-0">
+                    <div class="row d-none animate__animated animate__bounceOutRight self-assessment-icons">
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/score.png}"/></div>
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/glass.png}"/></div>
+                        <div class="col align-self-center"><img class="img-fluid" th:src="@{/img/gears.png}"/></div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <p class="fs-5 text-justify"><th:block th:text="#{index.secondSentence}"></th:block> <b class="my-blue" th:title="#{login.paytHover}" th:text="#{index.payAsYouThrow}"></b> <th:block th:text="#{index.thirdSentence}"></th:block> <b class="my-blue" th:title="#{login.kaytHover}" th:text="#{index.knowAsYouThrow}"></b> <th:block th:text="#{index.fourthSentence}"></th:block></p>
+                </div>
+                <div class="col-8 offset-2 col-sm-6 offset-sm-3 mb-3">
+                    <a class="btn btn-custom bottom-side-button w-100" th:href="@{/login}"><th:block th:text="#{index.selfAssessment}"></th:block><br><th:block th:text="#{index.toolkit}"></th:block></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+</body>
+</html>

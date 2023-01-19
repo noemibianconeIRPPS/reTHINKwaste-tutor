@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <th:block th:include="fragments/scriptsAndCss :: main"></th:block>
+    <script type="text/javascript" th:src="@{/webjars/chart.js/3.4.1/dist/chart.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/circle-progress-bar.css}"/>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C4BTKLSLBD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-C4BTKLSLBD');
+    </script>
+
+    <title th:text="#{profile.title}"></title>
+</head>
+<body>
+<th:block th:include="fragments/navbar :: header"></th:block>
+<th:block th:include="fragments/overlayLoading :: main"></th:block>
+<main class="d-flex align-items-stretch">
+    <div class="container d-flex flex-column align-self-center">
+        <div class="row">
+            <div class="col-lg-9 mt-3 mt-lg-0">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="borderRadiusBlueBorder p-3">
+                            <a class="pencil-anchor float-end mb-0" th:href="@{/registeredarea/profile/edit}">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
+                            <h5 class="text-center" th:text="${loggedUser.getFirstname() + ' ' + loggedUser.getLastname()}"></h5>
+                            <h6 class="my-blue text-center mb-0" th:text="${loggedUser.getOrganizationName()}"></h6>
+                            <h6 class="my-blue text-center fs-08" th:text="${loggedUser.getOrganizationType().getId() != 7 ?
+                            loggedUser.getOrganizationType().getName() : loggedUser.getOtherOrganizationType()}"></h6>
+                        </div>
+                        <div class="d-flex flex-column mt-2 borderRadiusBlueBackground">
+                            <h5 class="text-center text-white mt-4" th:text="#{profile.selfAssessmentProgressUppercase}"></h5>
+                            <div class="d-flex flex-column">
+                                <div class="chart mx-auto" id="percentageGraph" th:attr="data-percent=${loggedUser.getProgressPercentage()}" data-size="150"></div>
+                                <a class="ms-auto px-5 bd-highlight white-anchor" id="partialPercentageAnchor" th:if="${moduleInstance1 != null or
+                            moduleInstance2 != null or moduleInstance3 != null or moduleInstance4 != null or
+                            moduleInstance5 != null or moduleInstance6 != null}"><i class="fas fa-chevron-down"></i></a>
+                                <div id="modulePercentagesAndScores" class="mx-5 text-center d-none">
+                                    <div th:if="${moduleInstance1 != null}">
+                                        <span class="badge bg-green mb-2 ml-3" th:text="#{profile.acronymTTRUppercase}"></span>
+                                        <a th:if="${moduleInstance1.getPercentage().equals(100.0)}" class="white-anchor" onclick="downloadTTRassessment()" th:title="#{profile.downloadTTRAssessmentTitle}">
+                                            <i class="fas fa-file-download"></i>
+                                        </a>
+                                        <h6 class="white self-assessment-progress mb-0">
+                                            <span th:text="#{profile.scoreUppercase}"></span>
+                                            <span th:text="${moduleInstance1.getScore()} + ' '"></span>
+                                            <span th:text="#{profile.outOf72}"></span>
+                                        </h6>
+                                        <h6 class="white self-assessment-progress display-inline">
+                                            <span th:text="#{profile.progress}"></span>
+                                            <span th:text="${moduleInstance1.getPercentage()}+'%'"></span>
+                                        </h6>
+                                    </div>
+                                    <div th:if="${moduleInstance2 != null}">
+                                        <span class="badge bg-green mb-2 ml-3">ARM </span>
+                                        <a th:if="${moduleInstance2.getPercentage().equals(100.0)}" class="white-anchor" onclick="downloadARMassessment()" th:title="#{profile.downloadARMAssessmentTitle}">
+                                            <i class="fas fa-file-download"></i>
+                                        </a>
+                                        <h6 class="white self-assessment-progress mb-0">
+                                            <span th:text="#{profile.scoreUppercase}"></span>
+                                            <span th:text="${moduleInstance2.getScore()} + ' '"></span>
+                                            <span th:text="#{profile.outOf36}"></span>
+                                        </h6>
+                                        <h6 class="white self-assessment-progress display-inline">
+                                            <span th:text="#{profile.progress}"></span>
+                                            <span th:text="${moduleInstance2.getPercentage()}+'%'"></span>
+                                        </h6>
+                                    </div>
+                                    <div th:if="${moduleInstance3 != null}">
+                                        <span class="badge bg-green mb-2 ml-3">PM </span>
+                                        <a th:if="${moduleInstance3.getPercentage().equals(100.0)}" class="white-anchor" onclick="downloadPMassessment()" th:title="#{profile.downloadPMAssessmentTitle}">
+                                            <i class="fas fa-file-download"></i>
+                                        </a>
+                                        <h6 class="white self-assessment-progress mb-0">
+                                            <span th:text="#{profile.scoreUppercase}"></span>
+                                            <span th:text="${moduleInstance3.getScore()} + ' '"></span>
+                                            <span th:text="#{profile.outOf3}"></span>
+                                        </h6>
+                                        <h6 class="white self-assessment-progress display-inline">
+                                            <span th:text="#{profile.progress}"></span>
+                                            <span th:text="${moduleInstance3.getPercentage()}+'%'"></span>
+                                        </h6>
+                                    </div>
+                                    <div th:if="${moduleInstance4 != null}">
+                                        <span class="badge bg-green mb-2 ml-3">IGPP </span>
+                                        <a th:if="${moduleInstance4.getPercentage().equals(100.0)}" class="white-anchor" onclick="downloadIGPPassessment()" th:title="#{profile.downloadIGPPAssessmentTitle}">
+                                            <i class="fas fa-file-download"></i>
+                                        </a>
+                                        <h6 class="white self-assessment-progress mb-0">
+                                            <span th:text="#{profile.scoreUppercase}"></span>
+                                            <span th:text="${moduleInstance4.getScore()} + ' '"></span>
+                                            <span th:text="#{profile.outOf20}"></span>
+                                        </h6>
+                                        <h6 class="white self-assessment-progress display-inline">
+                                            <span th:text="#{profile.progress}"></span>
+                                            <span th:text="${moduleInstance4.getPercentage()}+'%'"></span>
+                                        </h6>
+                                    </div>
+                                    <div th:if="${moduleInstance5 != null}">
+                                        <span class="badge bg-green mb-2 ml-3">MNC </span>
+                                        <a th:if="${moduleInstance5.getPercentage().equals(100.0)}" class="white-anchor" onclick="downloadMNCassessment()" th:title="#{profile.downloadMNCAssessmentTitle}">
+                                            <i class="fas fa-file-download"></i>
+                                        </a>
+                                        <h6 class="white self-assessment-progress mb-0">
+                                            <span th:text="#{profile.scoreUppercase}"></span>
+                                            <span th:text="${moduleInstance5.getScore()} + ' '"></span>
+                                            <span th:text="#{profile.outOf30}"></span>
+                                        </h6>
+                                        <h6 class="white self-assessment-progress display-inline">
+                                            <span th:text="#{profile.progress}"></span>
+                                            <span th:text="${moduleInstance5.getPercentage()}+'%'"></span>
+                                        </h6>
+                                    </div>
+                                    <div th:if="${moduleInstance6 != null}">
+                                        <span class="badge bg-green mb-2 ml-3">OBP </span>
+                                        <a th:if="${moduleInstance6.getPercentage().equals(100.0)}" class="white-anchor" onclick="downloadOBPassessment()" th:title="#{profile.downloadOBPAssessmentTitle}">
+                                            <i class="fas fa-file-download"></i>
+                                        </a>
+                                        <h6 class="white self-assessment-progress mb-0">
+                                            <span th:text="#{profile.scoreUppercase}"></span>
+                                            <span th:text="${moduleInstance6.getScore()} + ' '"></span>
+                                            <span th:text="#{profile.outOf40}"></span>
+                                        </h6>
+                                        <h6 class="white self-assessment-progress display-inline">
+                                            <span th:text="#{profile.progress}"></span>
+                                            <span th:text="${moduleInstance6.getPercentage()}+'%'"></span>
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8 mt-2 mt-md-0">
+                        <div class="d-flex flex-column borderRadiusBlueBorderWhiteBackground">
+                            <div class="d-flex flex-column align-items-center p-2">
+                                <a class="text-center" th:href="@{/registeredarea/ttr}">
+                                    <img class="w-20" th:src="${scoresArray[0] < 1} ? '/img/radar_icons/TTR_red.png' : (${scoresArray[0] < 2 and scoresArray[0] >= 1} ? '/img/radar_icons/TTR_yellow.png' : '/img/radar_icons/TTR_green.png')">
+                                </a>
+                                <span class="traffic-light-span" th:text="#{profile.radarTTR}"></span>
+                            </div>
+                            <div class="d-flex align-items-stretch p-2">
+                                <div class="col-2 d-flex flex-column text-center">
+                                    <div class="my-auto">
+                                        <div class="d-flex flex-column align-items-center p-2">
+                                            <a class="text-center" th:href="@{/registeredarea/obp}">
+                                                <img class="w-50" th:src="${scoresArray[5] < 1} ? '/img/radar_icons/OBP_red.png' : (${scoresArray[5] < 2 and scoresArray[5] >= 1} ? '/img/radar_icons/OBP_yellow.png' : '/img/radar_icons/OBP_green.png')">
+                                            </a>
+                                            <span class="traffic-light-span" th:text="#{profile.radarOBP}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="my-auto">
+                                        <div class="d-flex flex-column align-items-center p-2">
+                                            <a class="text-center" th:href="@{/registeredarea/mnc}">
+                                                <img class="w-50" th:src="${scoresArray[4] < 1} ? '/img/radar_icons/MNC_red.png' : (${scoresArray[4] < 2 and scoresArray[4] >= 1} ? '/img/radar_icons/MNC_yellow.png' : '/img/radar_icons/MNC_green.png')">
+                                            </a>
+                                            <span class="traffic-light-span" th:text="#{profile.radarMNC}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div id="chartjs-radar">
+                                        <canvas id="canvas"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-2 d-flex flex-column text-center">
+                                    <div class="my-auto">
+                                        <div class="d-flex flex-column align-items-end">
+                                            <a target="_blank" th:classappend="${scoresArray[1] < 1} ? 'redLightBulb' : 'yellowLightBulb'"  class="text-center" th:if="${scoresArray[1] <= 2}" th:href="@{/learningMaterials/M2 Awareness Raising Measures - EN.PDF}">
+                                                <i class="fas fa-lightbulb"></i>
+                                            </a>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center p-2">
+                                            <a class="text-center" th:href="@{/registeredarea/arm}">
+                                                <img class="w-50" th:src="${scoresArray[1] < 1} ? '/img/radar_icons/ARM_red.png' : (${scoresArray[1] < 2 and scoresArray[1] >= 1} ? '/img/radar_icons/ARM_yellow.png' : '/img/radar_icons/ARM_green.png')" th:href="@{/learningMaterials/M2 Awareness Raising Measures - EN.PDF}">
+                                            </a>
+                                            <span class="traffic-light-span" th:text="#{profile.radarARM}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="my-auto">
+                                        <div class="d-flex flex-column align-items-end">
+                                            <a target="_blank" th:classappend="${scoresArray[2] < 1} ? 'redLightBulb' : 'yellowLightBulb'"  class="text-center" th:if="${scoresArray[2] <= 2}" th:href="@{/learningMaterials/M3 Data Protection - EN.PDF}">
+                                                <i class="fas fa-lightbulb"></i>
+                                            </a>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center p-2">
+                                            <a class="text-center" th:href="@{/registeredarea/pm}">
+                                                <img class="w-50" th:src="${scoresArray[2] < 1} ? '/img/radar_icons/PM_red.png' : (${scoresArray[2] <= 2 and scoresArray[2] >= 1} ? '/img/radar_icons/PM_yellow.png' : '/img/radar_icons/PM_green.png')">
+                                            </a>
+                                            <span class="traffic-light-span" th:text="#{profile.radarPM}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="my-auto">
+                                <div class="d-flex flex-column align-items-center">
+                                    <a target="_blank" th:classappend="${scoresArray[3] < 1} ? 'redLightBulb' : 'yellowLightBulb'"  class="text-center" th:if="${scoresArray[3] <= 2}" th:href="@{/learningMaterials/M4 - Integration of Green Public Procurement in contracting waste utilities - EN.PDF}">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </a>
+                                </div>
+                            <div class="d-flex flex-column align-items-center p-2">
+                                <a class="text-center" th:href="@{/registeredarea/igpp}">
+                                    <img class="w-20" th:src="${scoresArray[3] < 1} ? '/img/radar_icons/IGPP_red.png' : (${scoresArray[3] < 2 and scoresArray[3] >= 1} ? '/img/radar_icons/IGPP_yellow.png' : '/img/radar_icons/IGPP_green.png')">
+                                </a>
+                                <span class="traffic-light-span" th:text="#{profile.radarIGPP}"></span>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 my-4 mt-xl-0 borderRadiusBlueBackground">
+                <h5 class="text-center text-white mt-4" th:text="#{profile.downloadAreaUppercase}"></h5>
+                <p class="text-center text-white mt-2" th:text="#{profile.downloadGuidanceReports}"></p>
+                <div class="d-flex flex-column">
+                    <button class="btn btn-custom-sm w-100 mb-3" onclick="downloadTTRreport()" th:classappend="${moduleInstance1 == null or !moduleInstance1.getPercentage.toString().equals('100.0')} ? 'disabled' : ''" th:text="#{profile.extendedTTR}"></button>
+                    <button class="btn btn-custom-sm w-100 mb-3" onclick="downloadARMreport()" th:classappend="${moduleInstance2 == null or !moduleInstance2.getPercentage.toString().equals('100.0')} ? 'disabled' : ''" th:text="#{profile.extendedARM}"></button>
+                    <button class="btn btn-custom-sm w-100 mb-3" onclick="downloadPMreport()" th:classappend="${moduleInstance3 == null or !moduleInstance3.getPercentage.toString().equals('100.0')} ? 'disabled' : ''" th:text="#{profile.extendedPM}"></button>
+                    <button class="btn btn-custom-sm w-100 mb-3" onclick="downloadIGPPreport()" th:classappend="${moduleInstance4 == null or !moduleInstance4.getPercentage.toString().equals('100.0')} ? 'disabled' : ''" th:text="#{profile.extendedIGPP}"></button>
+                    <button class="btn btn-custom-sm w-100 mb-3" onclick="downloadMNCreport()" th:classappend="${moduleInstance5 == null or !moduleInstance5.getPercentage.toString().equals('100.0')} ? 'disabled' : ''" th:text="#{profile.extendedMNC}"></button>
+                    <button class="btn btn-custom-sm w-100 mb-3" onclick="downloadOBPreport()" th:classappend="${moduleInstance6 == null or !moduleInstance6.getPercentage.toString().equals('100.0')} ? 'disabled' : ''" th:text="#{profile.extendedOBP}"></button>
+                    <button class="btn btn-special-sm w-100 mb-3" onclick="downloadFullreport()" th:classappend="${moduleInstance1 != null and moduleInstance1.getPercentage.toString().equals('100.0') and
+                                                                                    moduleInstance1 != null and moduleInstance1.getPercentage.toString().equals('100.0') and
+                                                                                    moduleInstance3 != null and moduleInstance3.getPercentage.toString().equals('100.0') and
+                                                                                    moduleInstance4 != null and moduleInstance4.getPercentage.toString().equals('100.0') and
+                                                                                    moduleInstance5 != null and moduleInstance5.getPercentage.toString().equals('100.0') and
+                                                                                    moduleInstance6 != null and moduleInstance6.getPercentage.toString().equals('100.0')} ? '' : 'disabled'" th:text="#{profile.downloadALL}"></button>
+                </div>
+            </div>
+            <div class="col-lg-12 mt-3 mt-lg-0">
+                <div class="row mt-2">
+                    <div class="col p-0">
+                        <div class="borderRadiusBlueBorder p-3">
+                            <h5 class="my-green text-center" th:text="#{profile.suggestedLearningMaterialsUppercase}"></h5><br/>
+                            <p class="my-green text-center fst-italic" th:text="#{profile.materialsAreSuggested}"></p>
+                            <table align="center" id="suggestedLearningMaterialTable" class="cell-border d-none">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Modules</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Language</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="learningMaterial : ${suggestedLearningMaterials}">
+                                    <td><a target="_blank" th:text="${learningMaterial.getTitle()}" th:href="${learningMaterial.getLink()}"></a></td>
+                                    <td><p th:each="module : ${learningMaterial.getModules()}" th:text="${module.getAcronym()}"></p></td>
+                                    <td><p th:each="type : ${learningMaterial.getLearningMaterialTypes()}" th:text="${type.getType()}"></p></td>
+                                    <td class="td-w-5">
+                                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('EN')}">
+                                            <img style="width:50%;" th:src="@{/img/flags/united-kingdom.png}"/><span style="display:none;">en</span>
+                                        </th:block>
+                                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('IT')}">
+                                            <img style="width:50%;" th:src="@{/img/flags/italy.png}"/><span style="display:none;">it</span>
+                                        </th:block>
+                                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('ES')}">
+                                            <img style="width:50%;" th:src="@{/img/flags/spain.png}"/><span style="display:none;">es</span>
+                                        </th:block>
+                                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('CA')}">
+                                            <img style="width:50%;" th:src="@{/img/flags/catalonia.png}"/><span style="display:none;">ca</span>
+                                        </th:block>
+                                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('FR')}">
+                                            <img style="width:50%;" th:src="@{/img/flags/france.png}"/><span style="display:none;">fr</span>
+                                        </th:block>
+                                        <th:block th:if="${learningMaterial.getLanguage().getAcronym().equals('PT')}">
+                                            <img style="width:50%;" th:src="@{/img/flags/portugal.png}"/><span style="display:none;">pt</span>
+                                        </th:block>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:include="fragments/footer :: footer">&nbsp;</th:block>
+<script type="text/javascript" th:src="@{/js/profile.js}"></script>
+</body>
+</html>
